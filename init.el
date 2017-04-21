@@ -15,6 +15,7 @@
 
 (defvar myPackages
   '(auctex
+    autopair ;; set paranthesis paired
     auto-complete
     auto-complete-auctex
     better-defaults
@@ -22,6 +23,7 @@
     evil ;; evil mode --> vi-keybindings
     flycheck ;; flycheck for syntax checking
     jdee ;; jdee for java development suppport
+    magit ;; integrate git support
     material-theme ;; prettify
     org
     py-autopep8)) ;; formatting
@@ -37,7 +39,7 @@
 
 (setq inhibit-startup-message t) ;; hides startup message
 (load-theme 'material t) ;; load material theme
-(global-linum-mode t) ;; set line numbers globally
+(global-linum-mode t);; global linum
 
 (elpy-enable) ;; elpy-mode
 
@@ -64,6 +66,11 @@
 (require 'auto-complete)
 (global-auto-complete-mode t)
 
+;; AUTOPAIR
+;; globally
+(require 'autopair)
+(autopair-global-mode t)
+
 ;; EVIL-MODE
 (add-to-list 'load-path "~/.emacs.d/evil")
 (require 'evil)
@@ -71,7 +78,30 @@
 
 ;; DOC-VIEW
 ;; through auto-revert
-(add-hook 'doc-view-mode-hook 'auto-revert-mode)
+(add-hook 'doc-view-mode-hook (lambda () (linum-mode -1)) 'auto-revert-mode )
+;; !! mind the lamda that deactivates the linum-mode ^^^ 
+
+;; ORG-MODE
+(require 'org)
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done t)
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "WAIT(w@/!)" "IN PROGRESS" "DONE(d!)" "CANCELLED(c@)")))
+(setq org-todo-keyword-faces
+      '(("TODO" . org-warning) ("WAIT" . yellow)
+        ("IN PROGRESS" . yellow) ("DONE" . green)
+        ("CANCELLED" . (:foreground "blue" :weight bold))))
+(setq org-agenda-files (list "~/Org/organizer.org"
+                             "~/Org/uni.org"))
+;; skip in agenda if DONE
+(setq org-agenda-skip-scheduled-if-done t)
+;; Customize Agenda - Display All-TODOs
+(setq org-agenda-custom-commands
+      '(("c" "Simple agenda view"
+         ;; don't display DONE items
+         ((agenda "")
+          (alltodo "")))))
 
 ;;init.el ends here
 
